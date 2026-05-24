@@ -1,0 +1,35 @@
+# Gradle
+.gradle/
+build/
+**/build/
+local.properties
+captures/
+externalNativeBuild/
+.cxx/
+
+# IntelliJ / Android Studio
+*.iml
+.idea/
+*.iws
+*.ipr
+out/
+
+# macOS
+.DS_Store
+
+# 调试产物
+*.apk
+*.aab
+*.apks
+*.aar
+
+# 根目录截图垃圾（debug 截图惯放在此）
+/*.png
+/*.jpg
+/*.jpeg
+
+# 杂项
+.ruff_cache/
+.vscode/
+*.log
+hs_err_pid*

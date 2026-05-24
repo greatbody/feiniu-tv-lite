@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ===== 兼容老命名（其他文件仍可能引用） ===== -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- ===== 1:1 取自官方 FNTV 1.2.5 colors.xml 子集 ===== -->
+    <!-- 背景层级 -->
+    <color name="bg_content_1">#FF15171A</color>
+    <color name="bg_sidebar">#FF15171A</color>
+    <color name="bg_placeholder">#FF23242B</color>
+    <color name="bg_search">#FF23252B</color>
+    <color name="bg_pop">#FF2F3035</color>
+    <color name="bg_toast">#FF525459</color>
+    <color name="bg_skeleton">#08FFFFFF</color>
+    <color name="bg_dropdown">#80000000</color>
+
+    <!-- 文本层级 -->
+    <color name="text_title">#FFFFFFFF</color>
+    <color name="text_title_fix">#FF101114</color>  <!-- 反色文本：用于白底 -->
+    <color name="text_desc">#A6FFFFFF</color>
+    <color name="text_tips">#59FFFFFF</color>
+
+    <!-- Tab 状态 -->
+    <color name="bg_tab_default">#CC2F3035</color>
+    <color name="bg_tab_focus">#FFFFFFFF</color>
+    <color name="bg_tab_selected">#992F3035</color>
+
+    <!-- 列表项状态 -->
+    <color name="bg_list_default">#992F3035</color>
+    <color name="bg_list_focus">#FFFFFFFF</color>
+    <color name="bg_list_selected">#992F3035</color>
+
+    <!-- 按钮状态 -->
+    <color name="btn_default">#B2525459</color>
+    <color name="btn_default_dim">#FF23252B</color>
+    <color name="btn_focus">#FFFFFFFF</color>
+    <color name="btn_selected">#1AFFFFFF</color>
+
+    <!-- 品牌色 -->
+    <color name="brand">#FF3374DB</color>
+    <color name="brand_hover">#FF0E4CAF</color>
+    <color name="brand_active">#FF002D75</color>
+
+    <!-- ===== lite 旧命名 → 重定向到官方 token ===== -->
+    <color name="bg_dark">#FF15171A</color>
+    <color name="card_dark">#FF23242B</color>
+    <color name="accent">#FF3374DB</color>
+</resources>

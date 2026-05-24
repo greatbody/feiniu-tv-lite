@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  登录页（QR 优先 + EditText 兜底）：
+  - 顶部：标题 + 服务器信息（host:port）
+  - 左半区：QR 大图 + 说明 + 实时状态（扫码/提交/登录中…）
+  - 右半区：传统 EditText 表单 + 登录按钮 + 更换服务器
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_content_1">
+
+    <!-- 顶部区域 -->
+    <TextView
+        android:id="@+id/brandText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginTop="@dimen/space_screen_top"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/login_title"
+        android:textColor="@color/text_title"
+        android:textSize="@dimen/text_title_xl"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/serverInfoText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/space_screen_start"
+        android:ellipsize="end"
+        android:fontFamily="monospace"
+        android:maxLines="1"
+        android:textColor="@color/text_desc"
+        android:textSize="@dimen/text_body"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/brandText"
+        tools:text="服务器：http://10.10.11.21:5666" />
+
+    <ProgressBar
+        android:id="@+id/loginProgress"
+        style="@android:style/Widget.ProgressBar.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/brandText"
+        app:layout_constraintStart_toEndOf="@id/brandText"
+        app:layout_constraintTop_toTopOf="@id/brandText" />
+
+    <!-- 左半区：QR -->
+    <LinearLayout
+        android:id="@+id/qrPanel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="36dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/serverInfoText"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/login_qr_title"
+            android:textColor="@color/text_title"
+            android:textSize="@dimen/text_title_m" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="@string/login_qr_hint"
+            android:textColor="@color/text_desc"
+            android:textSize="@dimen/text_caption" />
+
+        <FrameLayout
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_input">
+
+            <ImageView
+                android:id="@+id/qrImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="14dp"
+                android:contentDescription="@string/login_qr_title"
+                android:scaleType="fitCenter" />
+
+            <!-- QR 不可用/扫描已用过时的占位 -->
+            <TextView
+                android:id="@+id/qrFallbackText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="20dp"
+                android:textColor="@color/text_tips"
+                android:textSize="@dimen/text_body"
+                android:visibility="gone"
+                tools:text="无法生成 QR，请用右侧表单"
+                tools:visibility="visible" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/qrUrlText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="monospace"
+            android:textColor="@color/text_tips"
+            android:textSize="@dimen/text_caption"
+            tools:text="http://192.168.1.10:34567/abcd…" />
+
+        <TextView
+            android:id="@+id/qrStatusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:textColor="@color/brand"
+            android:textSize="@dimen/text_body"
+            tools:text="等待手机扫码…" />
+    </LinearLayout>
+
+    <!-- 分隔线 -->
+    <View
+        android:id="@+id/divider"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="48dp"
+        android:background="#22ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/formPanel"
+        app:layout_constraintStart_toEndOf="@id/qrPanel"
+        app:layout_constraintTop_toBottomOf="@id/serverInfoText" />
+
+    <!-- 右半区：EditText 表单（兜底）-->
+    <LinearLayout
+        android:id="@+id/formPanel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="@dimen/space_screen_start"
+        android:layout_marginBottom="36dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/divider"
+        app:layout_constraintTop_toBottomOf="@id/serverInfoText"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/login_manual_title"
+            android:textColor="@color/text_title"
+            android:textSize="@dimen/text_title_m" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/login_manual_hint"
+            android:textColor="@color/text_desc"
+            android:textSize="@dimen/text_caption" />
+
+        <EditText
+            android:id="@+id/usernameInput"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_input"
+            android:hint="@string/login_hint_username"
+            android:imeOptions="actionNext"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:textColor="@color/text_title"
+            android:textColorHint="@color/text_tips"
+            android:textSize="@dimen/text_body" />
+
+        <EditText
+            android:id="@+id/passwordInput"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_input"
+            android:hint="@string/login_hint_password"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:textColor="@color/text_title"
+            android:textColorHint="@color/text_tips"
+            android:textSize="@dimen/text_body" />
+
+        <TextView
+            android:id="@+id/errorText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="#FFFF6E6E"
+            android:textSize="@dimen/text_caption"
+            android:visibility="gone"
+            tools:text="登录失败：用户名或密码错误"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/loginButton"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/tab_height"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_button_primary"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:minWidth="140dp"
+                android:paddingStart="@dimen/tab_padding_horizontal"
+                android:paddingEnd="@dimen/tab_padding_horizontal"
+                android:text="@string/login_submit"
+                android:textColor="@color/btn_text_color"
+                android:textSize="@dimen/tab_text_size" />
+
+            <TextView
+                android:id="@+id/changeServerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/tab_height"
+                android:background="@drawable/bg_button_secondary"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:minWidth="140dp"
+                android:paddingStart="@dimen/tab_padding_horizontal"
+                android:paddingEnd="@dimen/tab_padding_horizontal"
+                android:text="@string/login_change_server"
+                android:textColor="@color/btn_text_color"
+                android:textSize="@dimen/tab_text_size" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

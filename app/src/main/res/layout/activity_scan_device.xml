@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  扫描设备：
+  - 顶部品牌 + 状态文案（扫描中/已停止）
+  - 中部 设备列表（mDNS 发现的）+ 空态时显示提示文字
+  - 底部 双按钮：重新扫描 / 手动输入 IP
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_content_1">
+
+    <TextView
+        android:id="@+id/brandText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginTop="@dimen/space_screen_top"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/scan_title"
+        android:textColor="@color/text_title"
+        android:textSize="@dimen/text_title_xl"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/subtitleText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/space_screen_start"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="@string/scan_subtitle"
+        android:textColor="@color/text_desc"
+        android:textSize="@dimen/text_body"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/brandText" />
+
+    <ProgressBar
+        android:id="@+id/scanProgress"
+        style="@android:style/Widget.ProgressBar.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/subtitleText"
+        app:layout_constraintStart_toEndOf="@id/subtitleText"
+        app:layout_constraintTop_toTopOf="@id/subtitleText"
+        tools:visibility="visible" />
+
+    <ink.sunrui.feiniutv.widget.TvVerticalGridView
+        android:id="@+id/serverList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginTop="@dimen/space_section"
+        android:layout_marginEnd="@dimen/space_screen_start"
+        android:layout_marginBottom="24dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toTopOf="@id/buttonRow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subtitleText" />
+
+    <TextView
+        android:id="@+id/emptyHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:gravity="center"
+        android:text="@string/scan_subtitle_idle"
+        android:textColor="@color/text_tips"
+        android:textSize="@dimen/text_body"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/serverList"
+        app:layout_constraintEnd_toEndOf="@id/serverList"
+        app:layout_constraintStart_toStartOf="@id/serverList"
+        app:layout_constraintTop_toTopOf="@id/serverList" />
+
+    <LinearLayout
+        android:id="@+id/buttonRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/space_screen_start"
+        android:layout_marginBottom="36dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/rescanButton"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/tab_height"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_button_secondary"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:minWidth="180dp"
+            android:paddingStart="@dimen/tab_padding_horizontal"
+            android:paddingEnd="@dimen/tab_padding_horizontal"
+            android:text="@string/scan_rescan"
+            android:textColor="@color/btn_text_color"
+            android:textSize="@dimen/tab_text_size" />
+
+        <TextView
+            android:id="@+id/manualButton"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/tab_height"
+            android:background="@drawable/bg_button_primary"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:minWidth="200dp"
+            android:paddingStart="@dimen/tab_padding_horizontal"
+            android:paddingEnd="@dimen/tab_padding_horizontal"
+            android:text="@string/scan_manual_input"
+            android:textColor="@color/btn_text_color"
+            android:textSize="@dimen/tab_text_size" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

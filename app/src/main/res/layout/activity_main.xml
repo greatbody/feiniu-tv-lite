@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  主页：
+  - 顶部品牌 + 状态条
+  - 中部水平 Tab（媒体库），焦点白底反色
+  - 下部 5 列海报网格（GridLayoutManager 在代码里设置）
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_content_1">
+
+    <!-- 顶部品牌 -->
+    <TextView
+        android:id="@+id/brandText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginTop="@dimen/space_screen_top"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/title_app"
+        android:textColor="@color/text_title"
+        android:textSize="@dimen/text_title_xl"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/brandSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="@string/title_app_subtitle"
+        android:textColor="@color/text_tips"
+        android:textSize="@dimen/text_caption"
+        app:layout_constraintBottom_toBottomOf="@id/brandText"
+        app:layout_constraintStart_toEndOf="@id/brandText" />
+
+    <!-- 顶部右侧状态药丸 -->
+    <TextView
+        android:id="@+id/authStatusText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="@dimen/space_screen_start"
+        android:background="@drawable/bg_status_pill"
+        android:ellipsize="end"
+        android:focusable="false"
+        android:fontFamily="sans-serif"
+        android:maxLines="1"
+        android:paddingStart="14dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="6dp"
+        android:text="@string/status_auth_pending"
+        android:textColor="@color/text_desc"
+        android:textSize="@dimen/text_caption"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="@id/brandText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@id/brandSubtitle"
+        app:layout_constraintTop_toTopOf="@id/brandText"
+        app:layout_constraintWidth_default="wrap"
+        tools:text="已加载 128 部" />
+
+    <!-- 媒体库 Tab 横向滚动 -->
+    <ink.sunrui.feiniutv.widget.TvHorizontalGridView
+        android:id="@+id/libraryTabs"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginTop="@dimen/space_section"
+        android:layout_marginEnd="@dimen/space_screen_start"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:nextFocusDown="@id/posterGrid"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/brandText" />
+
+    <!-- 海报网格 -->
+    <ink.sunrui.feiniutv.widget.TvVerticalGridView
+        android:id="@+id/posterGrid"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="12dp"
+        android:clipChildren="false"
+        android:clipToPadding="true"
+        android:nextFocusUp="@id/libraryTabs"
+        android:paddingStart="20dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="36dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/libraryTabs" />
+
+    <!-- 空态提示（缺省隐藏，加载失败/空库时显示） -->
+    <TextView
+        android:id="@+id/emptyHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="4"
+        android:textColor="@color/text_desc"
+        android:textSize="@dimen/text_body"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/libraryTabs"
+        tools:text="没有可用媒体库" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

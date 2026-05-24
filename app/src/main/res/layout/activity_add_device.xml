@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  手动添加 NAS：
+  - 顶部品牌 + 标题
+  - 中部 主机 + 端口 两个输入框
+  - 底部 取消 / 保存按钮
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_content_1">
+
+    <TextView
+        android:id="@+id/brandText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginTop="@dimen/space_screen_top"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/add_title"
+        android:textColor="@color/text_title"
+        android:textSize="@dimen/text_title_xl"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/formGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="@dimen/space_screen_start"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/brandText">
+
+        <EditText
+            android:id="@+id/hostInput"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/bg_input"
+            android:hint="@string/add_hint_host"
+            android:imeOptions="actionNext"
+            android:inputType="textUri"
+            android:maxLines="1"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:textColor="@color/text_title"
+            android:textColorHint="@color/text_tips"
+            android:textSize="@dimen/text_body" />
+
+        <EditText
+            android:id="@+id/portInput"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_input"
+            android:hint="@string/add_hint_port"
+            android:imeOptions="actionDone"
+            android:inputType="number"
+            android:maxLength="5"
+            android:maxLines="1"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:textColor="@color/text_title"
+            android:textColorHint="@color/text_tips"
+            android:textSize="@dimen/text_body" />
+
+        <TextView
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/tab_height"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_button_primary"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:minWidth="220dp"
+            android:paddingStart="@dimen/tab_padding_horizontal"
+            android:paddingEnd="@dimen/tab_padding_horizontal"
+            android:text="@string/add_save"
+            android:textColor="@color/btn_text_color"
+            android:textSize="@dimen/tab_text_size" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">飞牛TV饭</string>
+    <string name="title_app">飞牛 TV</string>
+    <string name="title_app_subtitle">轻量版</string>
+
+    <!-- Main 状态文案 -->
+    <string name="status_auth_pending">未登录</string>
+    <string name="status_auth_logging_in">登录中…</string>
+    <string name="status_auth_failed">登录失败（%1$s）</string>
+    <string name="status_auth_loading_media">加载媒体库…</string>
+    <string name="status_auth_no_library">没有可用媒体库</string>
+    <string name="status_auth_invalid_token">令牌无效</string>
+    <string name="status_auth_loading_items">加载片单…</string>
+    <string name="status_auth_media_loaded">%1$d 部</string>
+    <string name="status_auth_media_failed">片单加载失败（%1$s）</string>
+    <string name="status_auth_library_failed">媒体库加载失败（%1$s）</string>
+
+    <!-- Player -->
+    <string name="play_failed">播放失败（%1$d/%2$d）</string>
+    <string name="player_hint_seek">←/→ 快进退 · OK 暂停/继续 · ↑ 切换分辨率</string>
+    <string name="player_loading">缓冲中…</string>
+
+    <!-- Splash -->
+    <string name="splash_tagline">遥控器友好的飞牛 NAS 客户端</string>
+
+    <!-- ScanDevice -->
+    <string name="scan_title">选择 NAS 设备</string>
+    <string name="scan_subtitle">正在通过 mDNS 在局域网内发现飞牛 NAS…</string>
+    <string name="scan_subtitle_idle">未发现设备。请确认 NAS 与盒子在同一网段，或直接手动输入。</string>
+    <string name="scan_manual_input">手动输入 IP</string>
+    <string name="scan_rescan">重新扫描</string>
+
+    <!-- AddDevice -->
+    <string name="add_title">手动添加 NAS</string>
+    <string name="add_hint_host">主机地址（IP 或域名）</string>
+    <string name="add_hint_port">端口（默认 5666）</string>
+    <string name="add_save">保存并继续</string>
+    <string name="add_invalid_host">请输入合法的主机地址</string>
+
+    <!-- Detail -->
+    <string name="detail_play">▶ 立即播放</string>
+    <string name="detail_back">返回</string>
+    <string name="detail_no_overview">暂无简介</string>
+    <string name="detail_unknown_year">未知</string>
+    <string name="detail_rating">★ %1$.1f</string>
+    <string name="detail_runtime">%1$d 分钟</string>
+    <string name="detail_favorite_add">♡ 收藏</string>
+    <string name="detail_favorite_remove">♥ 已收藏</string>
+    <string name="detail_watched_mark">○ 标记已看</string>
+    <string name="detail_watched_unmark">● 已看过</string>
+    <string name="detail_toggling">…</string>
+
+    <!-- Login -->
+    <string name="login_title">登录</string>
+    <string name="login_server_label">服务器：</string>
+    <string name="login_hint_username">用户名</string>
+    <string name="login_hint_password">密码</string>
+    <string name="login_submit">登录</string>
+    <string name="login_change_server">更换服务器</string>
+    <string name="login_empty">用户名和密码均不能为空</string>
+    <string name="login_qr_title">手机扫码登录</string>
+    <string name="login_qr_hint">用手机相机或微信扫一扫</string>
+    <string name="login_qr_waiting">等待手机扫码…</string>
+    <string name="login_qr_submitted">已收到，正在登录…</string>
+    <string name="login_qr_unavailable">无法启动本地服务，请用右侧表单</string>
+    <string name="login_manual_title">遥控器输入</string>
+    <string name="login_manual_hint">若手机不便，可用遥控器输入</string>
+</resources>

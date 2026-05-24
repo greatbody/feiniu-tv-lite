@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  播放器界面：
+  - SurfaceView 铺底
+  - 顶部 overlay：返回提示 + 标题
+  - 底部 overlay：进度条 + 时间码 + 操作提示
+  - 中央：loading / seek overlay
+  Top/Bottom overlay 默认可见，由 PlayerActivity 控制 3 秒后自动淡出（通过 alpha + INVISIBLE）
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <SurfaceView
+        android:id="@+id/playerSurface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true" />
+
+    <!-- ===== 顶部 overlay ===== -->
+    <FrameLayout
+        android:id="@+id/topOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/player_overlay_height_top"
+        android:layout_gravity="top"
+        android:background="@drawable/bg_player_overlay_top"
+        android:paddingStart="@dimen/space_screen_start"
+        android:paddingTop="20dp"
+        android:paddingEnd="@dimen/space_screen_start">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:textColor="@color/text_title"
+            android:textSize="@dimen/player_title_size"
+            tools:text="正在播放：电影标题" />
+
+        <TextView
+            android:id="@+id/topHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_marginBottom="6dp"
+            android:text="@string/player_hint_seek"
+            android:textColor="@color/text_tips"
+            android:textSize="@dimen/text_caption" />
+    </FrameLayout>
+
+    <!-- ===== 底部 overlay ===== -->
+    <LinearLayout
+        android:id="@+id/bottomOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/player_overlay_height_bottom"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_player_overlay_bottom"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/space_screen_start"
+        android:paddingEnd="@dimen/space_screen_start"
+        android:paddingBottom="22dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/currentTimeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:minWidth="62dp"
+                android:text="00:00"
+                android:textColor="@color/text_title"
+                android:textSize="@dimen/player_time_size" />
+
+            <ProgressBar
+                android:id="@+id/playerProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="6dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:layout_weight="1"
+                android:max="1000"
+                android:progress="0"
+                android:progressDrawable="@drawable/progress_player" />
+
+            <TextView
+                android:id="@+id/totalTimeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:minWidth="62dp"
+                android:gravity="end"
+                android:text="--:--"
+                android:textColor="@color/text_desc"
+                android:textSize="@dimen/player_time_size" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ===== 中央：loading ===== -->
+    <LinearLayout
+        android:id="@+id/loadingView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ProgressBar
+            style="@android:style/Widget.ProgressBar.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/player_loading"
+            android:textColor="@color/text_desc"
+            android:textSize="@dimen/text_body" />
+    </LinearLayout>
+
+    <!-- ===== Seek 提示气泡 ===== -->
+    <TextView
+        android:id="@+id/seekOverlayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_seek_overlay"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="22dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="22dp"
+        android:paddingBottom="14dp"
+        android:textColor="@color/text_title"
+        android:textSize="28sp"
+        android:visibility="gone"
+        tools:text="+30s (x4)"
+        tools:visibility="visible" />
+
+</FrameLayout>

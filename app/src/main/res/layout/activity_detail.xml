@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  详情页（兼容 Movie / TV）：
+  - 顶部 50% backdrop + 渐变蒙层
+  - 下半区：左小海报 + 右标题/meta/overview
+  - 底部按钮区（Movie 显示 立即播放；TV 隐藏，让剧集列表作为主 CTA）
+  - 季 Tab 行（多季 TV 才显示）+ 剧集横排（TV / Season 才显示）
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_content_1">
+
+    <!-- ==== Backdrop ==== -->
+    <ImageView
+        android:id="@+id/backdropImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.50"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@color/bg_placeholder" />
+
+    <View
+        android:id="@+id/backdropFade"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_detail_backdrop_fade"
+        app:layout_constraintBottom_toBottomOf="@id/backdropImage"
+        app:layout_constraintEnd_toEndOf="@id/backdropImage"
+        app:layout_constraintStart_toStartOf="@id/backdropImage"
+        app:layout_constraintTop_toTopOf="@id/backdropImage" />
+
+    <!-- ==== 左侧海报（叠在 backdrop 下沿）==== -->
+    <FrameLayout
+        android:id="@+id/posterFrame"
+        android:layout_width="140dp"
+        android:layout_height="210dp"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:background="@drawable/bg_poster_placeholder"
+        android:elevation="4dp"
+        app:layout_constraintBottom_toTopOf="@id/episodesContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/backdropImage"
+        app:layout_constraintVertical_bias="0.5">
+
+        <ImageView
+            android:id="@+id/posterImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop" />
+    </FrameLayout>
+
+    <!-- ==== 右侧元数据 ==== -->
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="@dimen/space_screen_top"
+        android:layout_marginEnd="@dimen/space_screen_start"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:maxLines="2"
+        android:textColor="@color/text_title"
+        android:textSize="@dimen/text_title_xl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/posterFrame"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="少年梁祝" />
+
+    <TextView
+        android:id="@+id/originalTitleText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/text_tips"
+        android:textSize="@dimen/text_body"
+        app:layout_constraintEnd_toEndOf="@id/titleText"
+        app:layout_constraintStart_toStartOf="@id/titleText"
+        app:layout_constraintTop_toBottomOf="@id/titleText"
+        tools:text="The Legend of Liang Shanbo and Zhu Yingtai" />
+
+    <TextView
+        android:id="@+id/metaText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/text_desc"
+        android:textSize="@dimen/text_body"
+        app:layout_constraintEnd_toEndOf="@id/titleText"
+        app:layout_constraintStart_toStartOf="@id/titleText"
+        app:layout_constraintTop_toBottomOf="@id/originalTitleText"
+        tools:text="2000 · 40 集 · ★ 7.8 · 1080p · 连续剧" />
+
+    <TextView
+        android:id="@+id/overviewText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:ellipsize="end"
+        android:lineSpacingMultiplier="1.3"
+        android:maxLines="3"
+        android:textColor="@color/text_desc"
+        android:textSize="@dimen/text_body"
+        app:layout_constraintEnd_toEndOf="@id/titleText"
+        app:layout_constraintStart_toStartOf="@id/titleText"
+        app:layout_constraintTop_toBottomOf="@id/metaText"
+        tools:text="影片简介示例：故事发生在……" />
+
+    <!-- ==== Movie/Video 模式：底部播放按钮（TV 模式隐藏，让剧集列表作 CTA）==== -->
+    <LinearLayout
+        android:id="@+id/movieButtonRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="@id/titleText"
+        app:layout_constraintTop_toBottomOf="@id/overviewText">
+
+        <TextView
+            android:id="@+id/playButton"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/tab_height"
+            android:background="@drawable/bg_button_primary"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:minWidth="200dp"
+            android:paddingStart="@dimen/tab_padding_horizontal"
+            android:paddingEnd="@dimen/tab_padding_horizontal"
+            android:text="@string/detail_play"
+            android:textColor="@color/btn_text_color"
+            android:textSize="@dimen/tab_text_size" />
+    </LinearLayout>
+
+    <!-- ==== 右上：收藏 / 已看 / 返回（两种模式都可见）==== -->
+    <LinearLayout
+        android:id="@+id/topActionRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_screen_top"
+        android:layout_marginEnd="@dimen/space_screen_start"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/favoriteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_button_secondary"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:minWidth="96dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/detail_favorite_add"
+            android:textColor="@color/btn_text_color"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/watchedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_button_secondary"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:minWidth="96dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/detail_watched_mark"
+            android:textColor="@color/btn_text_color"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvBackButton"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_button_secondary"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:minWidth="80dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/detail_back"
+            android:textColor="@color/btn_text_color"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- ==== TV 模式：季 Tab 行（多季时可见）==== -->
+    <ink.sunrui.feiniutv.widget.TvHorizontalGridView
+        android:id="@+id/seasonTabs"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginEnd="@dimen/space_screen_start"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/episodesContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_marginBottom="10dp"
+        tools:visibility="visible" />
+
+    <!-- ==== TV/Season 模式：剧集横排区域（容器）==== -->
+    <FrameLayout
+        android:id="@+id/episodesContainer"
+        android:layout_width="0dp"
+        android:layout_height="180dp"
+        android:layout_marginStart="@dimen/space_screen_start"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="20dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible">
+
+        <ink.sunrui.feiniutv.widget.TvHorizontalGridView
+            android:id="@+id/episodeList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:clipToPadding="false" />
+    </FrameLayout>
+
+    <!-- TV 模式下右上角的返回按钮（独立于 movieButtonRow，否则被隐藏后没法回退） -->
+
+    <ProgressBar
+        android:id="@+id/loadingView"
+        style="@android:style/Widget.ProgressBar.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/errorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="20dp"
+        android:textColor="@color/text_desc"
+        android:textSize="@dimen/text_body"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="加载失败" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

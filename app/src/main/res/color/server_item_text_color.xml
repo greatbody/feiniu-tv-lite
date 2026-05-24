@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 列表项文字色：焦点深色（白底），其它白 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true" android:color="@color/text_title_fix" />
+    <item android:color="@color/text_title" />
+</selector>

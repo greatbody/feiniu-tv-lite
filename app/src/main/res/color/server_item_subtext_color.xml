@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 列表项副文字色：焦点态稍深一点的灰（白底） -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true" android:color="#80101114" />
+    <item android:color="@color/text_desc" />
+</selector>

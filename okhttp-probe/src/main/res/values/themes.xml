@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.OkHttpProbe" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">#101215</item>
+        <item name="colorPrimary">#4FC3F7</item>
+        <item name="colorPrimaryDark">#4FC3F7</item>
+        <item name="colorAccent">#4FC3F7</item>
+    </style>
+</resources>

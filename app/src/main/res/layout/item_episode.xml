@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 单集卡片：16:9 截图缩略 + 集号徽标 + 标题 + 进度条（如已看过部分）-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/episodeRoot"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="14dp"
+    android:clickable="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:duplicateParentState="true"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="180dp"
+            android:layout_height="102dp"
+            android:background="@drawable/bg_poster_placeholder"
+            android:duplicateParentState="true">
+
+            <ImageView
+                android:id="@+id/episodeThumb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                tools:src="@android:drawable/ic_menu_gallery" />
+
+            <!-- 集号徽标（左上）-->
+            <TextView
+                android:id="@+id/epNumberBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_duration_badge"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="6dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/text_title"
+                android:textSize="11sp"
+                tools:text="EP 01" />
+
+            <!-- 时长徽标（右下）-->
+            <TextView
+                android:id="@+id/epDurationBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_duration_badge"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="6dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/text_title"
+                android:textSize="11sp"
+                tools:text="43:26" />
+
+            <!-- 已看进度条（底部，仅 watched_ts>0 时显示）-->
+            <ProgressBar
+                android:id="@+id/epProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_gravity="bottom"
+                android:max="1000"
+                android:progress="0"
+                android:progressDrawable="@drawable/progress_player"
+                android:visibility="gone"
+                tools:progress="350"
+                tools:visibility="visible" />
+
+            <!-- 已看角标（中央，仅 watched=true 时显示，覆盖在缩略图上半透明黑底）-->
+            <FrameLayout
+                android:id="@+id/epWatchedBadge"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#80000000"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_duration_badge"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingStart="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="3dp"
+                    android:text="✓ 已看"
+                    android:textColor="@color/text_title"
+                    android:textSize="12sp" />
+            </FrameLayout>
+
+            <!-- 焦点描边覆盖层 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_poster_focus"
+                android:duplicateParentState="true" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/epTitle"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:duplicateParentState="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_desc"
+            android:textSize="@dimen/text_caption"
+            tools:text="第 1 集 · 邂逅" />
+    </LinearLayout>
+
+</FrameLayout>

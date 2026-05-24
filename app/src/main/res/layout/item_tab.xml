@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 顶部 Tab 按钮：药丸样式 + 焦点白底 + 文本反色切换 -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tabText"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/tab_height"
+    android:layout_marginEnd="@dimen/tab_gap"
+    android:background="@drawable/bg_tab_selector"
+    android:clickable="true"
+    android:focusable="true"
+    android:fontFamily="sans-serif-medium"
+    android:gravity="center"
+    android:minWidth="120dp"
+    android:paddingStart="@dimen/tab_padding_horizontal"
+    android:paddingEnd="@dimen/tab_padding_horizontal"
+    android:singleLine="true"
+    android:textColor="@color/tab_text_color"
+    android:textSize="@dimen/tab_text_size" />

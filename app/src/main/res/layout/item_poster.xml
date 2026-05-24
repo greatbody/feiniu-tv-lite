@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  海报卡（2:3 竖版海报 + 标题）
+  - 外层 FrameLayout 是焦点宿主，clipChildren=false 让缩放/描边不被裁切
+  - 通过 duplicateParentState 链把焦点态从 posterRoot 传递到 posterFocusFrame
+  - 缩放由 OnFocusChangeListener + ViewPropertyAnimator 实现（API 12+）
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/posterRoot"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="@dimen/poster_gap_h"
+    android:layout_marginBottom="@dimen/poster_gap_v"
+    android:clickable="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:duplicateParentState="true"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="@dimen/poster_width"
+            android:layout_height="@dimen/poster_height"
+            android:background="@drawable/bg_poster_placeholder"
+            android:clipChildren="false"
+            android:duplicateParentState="true">
+
+            <ImageView
+                android:id="@+id/posterImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                tools:src="@android:drawable/ic_menu_gallery" />
+
+            <!-- 时长徽标（右下角） -->
+            <TextView
+                android:id="@+id/durationBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="6dp"
+                android:background="@drawable/bg_duration_badge"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="6dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/text_title"
+                android:textSize="11sp"
+                tools:text="1:45:20" />
+
+            <!-- 焦点描边覆盖层 -->
+            <View
+                android:id="@+id/posterFocusFrame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_poster_focus"
+                android:duplicateParentState="true" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="@dimen/poster_width"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:duplicateParentState="true"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="2"
+            android:textColor="@color/text_desc"
+            android:textSize="@dimen/poster_title_size"
+            tools:text="电影标题示例文本" />
+    </LinearLayout>
+
+</FrameLayout>
