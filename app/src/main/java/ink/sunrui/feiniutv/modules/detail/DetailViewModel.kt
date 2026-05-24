@@ -31,18 +31,20 @@ class DetailViewModel : ViewModel() {
         private const val TAG = "DetailViewModel"
     }
 
-    val detail = MutableLiveData<ItemDetail>()
-    val seasons = MutableLiveData<List<Season>>()
-    val episodes = MutableLiveData<List<Episode>>()      // 当前展示的季的剧集
-    val selectedSeasonGuid = MutableLiveData<String?>()  // 当前选中的季 guid（多季选择器用）
-    val errorMessage = MutableLiveData<String>()
-    val loading = MutableLiveData<Boolean>()
+    // 所有 LiveData 标记为可空：MutableLiveData 在 Java 层 value 始终可能为 null（初始未赋值时）。
+    // 这同时绕开 lint 的 NullSafeMutableLiveData 误报（lintVitalRelease 会因此 fail）。
+    val detail = MutableLiveData<ItemDetail?>()
+    val seasons = MutableLiveData<List<Season>?>()
+    val episodes = MutableLiveData<List<Episode>?>()      // 当前展示的季的剧集
+    val selectedSeasonGuid = MutableLiveData<String?>()   // 当前选中的季 guid（多季选择器用）
+    val errorMessage = MutableLiveData<String?>()
+    val loading = MutableLiveData<Boolean?>()
 
     // 收藏 / 已看：与服务器同步的乐观本地状态。每次切换调 API，失败回滚。
-    val isFavorite = MutableLiveData<Boolean>()
-    val isWatched = MutableLiveData<Boolean>()
-    val toggleBusy = MutableLiveData<Boolean>()  // 防止狂按
-    val toggleError = MutableLiveData<String>()
+    val isFavorite = MutableLiveData<Boolean?>()
+    val isWatched = MutableLiveData<Boolean?>()
+    val toggleBusy = MutableLiveData<Boolean?>()  // 防止狂按
+    val toggleError = MutableLiveData<String?>()
 
     fun load(itemGuid: String) {
         loading.value = true
