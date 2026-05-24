@@ -7,6 +7,9 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+permissions:
+  contents: write   # 需要写权限才能创建 Release
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,19 +33,39 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Build Release APK (unsigned)
-        run: ./gradlew assembleRelease --no-daemon --stacktrace
+      - name: Rename APK with build metadata
+        id: rename
+        run: |
+          mkdir -p release-assets
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          DATE=$(date +%Y%m%d-%H%M%S)
+          SRC=$(ls app/build/outputs/apk/debug/*.apk | head -1)
+          DEST="release-assets/feiniu-tv-lite-debug-${DATE}-${SHORT_SHA}.apk"
+          cp "$SRC" "$DEST"
+          echo "apk_path=$DEST" >> "$GITHUB_OUTPUT"
+          echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+          echo "tag=build-${DATE}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
 
-      - name: Upload Debug APK
+      - name: Upload Debug APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: feiniu-tv-lite-debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: ${{ steps.rename.outputs.apk_path }}
           if-no-files-found: error
 
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release
+        # 仅在 push 到 main/master 或手动触发时发布，PR 不发
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
         with:
-          name: feiniu-tv-lite-release-unsigned
-          path: app/build/outputs/apk/release/*.apk
-          if-no-files-found: error
+          tag_name: ${{ steps.rename.outputs.tag }}
+          name: Debug Build ${{ steps.rename.outputs.date }}
+          body: |
+            自动构建的 Debug APK。
+
+            - Commit: `${{ github.sha }}`
+            - 触发: `${{ github.event_name }}`
+            - 分支: `${{ github.ref_name }}`
+          prerelease: true
+          files: ${{ steps.rename.outputs.apk_path }}
