@@ -19,7 +19,7 @@ import ink.sunrui.feiniutv.databinding.ItemEpisodeBinding
  */
 class EpisodeAdapter(
     private val tokenProvider: () -> String,
-    private val onClick: (Episode) -> Unit
+    private val onClick: (index: Int, episode: Episode) -> Unit
 ) : RecyclerView.Adapter<EpisodeAdapter.VH>() {
 
     private val items = mutableListOf<Episode>()
@@ -101,7 +101,10 @@ class EpisodeAdapter(
                 binding.episodeThumb.setImageDrawable(null)
             }
 
-            binding.episodeRoot.setOnClickListener { onClick(e) }
+            binding.episodeRoot.setOnClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) onClick(pos, e)
+            }
         }
 
         private fun formatDuration(seconds: Int): String {

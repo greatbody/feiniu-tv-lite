@@ -20,6 +20,15 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
         const val EXTRA_TITLE = "extra_title"
         const val EXTRA_TOKEN = "extra_token"
         const val EXTRA_ITEM_GUID = "extra_item_guid"
+
+        /**
+         * 联播队列：当 itemGuid 属于一个剧集列表时，传入完整的 guid / title 列表 + 当前索引，
+         * 播放正常结束时会自动切到下一集（[playNextEpisodeIfAny]）。
+         * 电影 / 单集 / 直接播放 TV 入口时不传，行为退化为播完即 finish。
+         */
+        const val EXTRA_EPISODE_GUIDS = "extra_episode_guids"
+        const val EXTRA_EPISODE_TITLES = "extra_episode_titles"
+        const val EXTRA_EPISODE_INDEX = "extra_episode_index"
     }
 
     private lateinit var binding: ActivityPlayerBinding
@@ -32,6 +41,11 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private var token: String = ""
     private var itemGuid: String = ""
     private var mediaGuid: String = ""
+
+    // 联播队列。若非空，则正常播完后切到下一集。
+    private var episodeGuids: ArrayList<String>? = null
+    private var episodeTitles: ArrayList<String>? = null
+    private var episodeIndex: Int = -1
 
     // 当前播放会话状态（设置弹窗用）
     private var currentVideoGuid: String? = null
@@ -71,6 +85,11 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
         token = intent.getStringExtra(EXTRA_TOKEN).orEmpty()
         itemGuid = intent.getStringExtra(EXTRA_ITEM_GUID).orEmpty()
         val title = intent.getStringExtra(EXTRA_TITLE).orEmpty()
+
+        // 读取联播队列（可空，仅剧集播放时由 DetailActivity 传入）
+        episodeGuids = intent.getStringArrayListExtra(EXTRA_EPISODE_GUIDS)
+        episodeTitles = intent.getStringArrayListExtra(EXTRA_EPISODE_TITLES)
+        episodeIndex = intent.getIntExtra(EXTRA_EPISODE_INDEX, -1)
 
         if (token.isBlank() || itemGuid.isBlank()) {
             Toast.makeText(this, "缺少播放参数", Toast.LENGTH_SHORT).show()
@@ -185,6 +204,10 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
                     resumeAfterPrematureEnd(pos)
                 } else {
                     Log.i(TAG, "Playback finished normally")
+                    if (!playNextEpisodeIfAny()) {
+                        // 无下一集 → 退出播放页
+                        finish()
+                    }
                 }
             }
         }
@@ -292,6 +315,53 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
             p.stop()
         }
         runCatching { p.release() }
+    }
+
+    /**
+     * 自动联播下一集。
+     *
+     * 返回 true 表示已切到下一集并触发 [resolveAndPlay]；返回 false 表示没有下一集（队列为空 / 已是最后一集），
+     * 调用方应自行决定后续（通常是 finish）。
+     *
+     * 重置全部播放会话状态：播放器、流缓存、fallback 阶段、seek、进度更新、overlay。
+     */
+    private fun playNextEpisodeIfAny(): Boolean {
+        val guids = episodeGuids ?: return false
+        val nextIdx = episodeIndex + 1
+        if (nextIdx < 0 || nextIdx >= guids.size) return false
+
+        val nextGuid = guids[nextIdx]
+        val nextTitle = episodeTitles?.getOrNull(nextIdx).orEmpty()
+
+        Log.i(TAG, "Auto-next episode: index=$nextIdx guid=$nextGuid title=$nextTitle")
+        Toast.makeText(this, "下一集：${nextTitle.ifBlank { "第 ${nextIdx + 1} 集" }}", Toast.LENGTH_SHORT).show()
+
+        // 推进队列指针
+        episodeIndex = nextIdx
+        itemGuid = nextGuid
+
+        // 重置全部播放会话状态（参考 onDestroy / onResume 的释放路径）
+        progressHandler.removeCallbacks(progressRunnable)
+        seekHandler.removeCallbacks(seekRunnable)
+        releasePlayer()
+        pendingPlayUrl = null
+        pendingSeekAfterPrepareMs = -1L
+        pendingSeekPosition = -1L
+        fallbackStage = 0
+        cachedStreams = null
+        currentVideoGuid = null
+        currentAudioGuid = null
+        currentSubtitleGuid = null
+        currentResolution = ""
+        currentBitrate = 0L
+        // currentSpeed 保留（用户期望连贯）
+
+        binding.titleText.text = if (nextTitle.isNotBlank()) "正在播放：$nextTitle" else "正在播放"
+        setOverlayVisible(true)
+        scheduleOverlayHide()
+
+        resolveAndPlay()
+        return true
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {

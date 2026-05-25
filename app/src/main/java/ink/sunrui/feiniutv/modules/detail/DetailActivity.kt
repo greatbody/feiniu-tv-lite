@@ -45,6 +45,9 @@ class DetailActivity : AppCompatActivity() {
     private var fallbackTitle: String = ""
     private var loadedDetail: ItemDetail? = null
 
+    // 当前展示的剧集列表（用于点击集卡时把整队传给 PlayerActivity 做自动联播）
+    private var currentEpisodes: List<Episode> = emptyList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
@@ -83,7 +86,7 @@ class DetailActivity : AppCompatActivity() {
         // 剧集列表
         episodeAdapter = EpisodeAdapter(
             tokenProvider = { AccountStore.getToken() }
-        ) { ep -> startPlay(ep.guid, ep.displayTitle) }
+        ) { index, ep -> startPlay(ep.guid, ep.displayTitle, currentEpisodes, index) }
         binding.episodeList.apply {
             layoutManager = LinearLayoutManager(this@DetailActivity, LinearLayoutManager.HORIZONTAL, false)
             adapter = episodeAdapter
@@ -106,6 +109,7 @@ class DetailActivity : AppCompatActivity() {
             }
         }
         vm.episodes.observe(this) { list ->
+            currentEpisodes = list
             episodeAdapter.submit(list)
             if (list.isNotEmpty() && binding.episodesContainer.visibility == View.VISIBLE) {
                 binding.episodeList.post {
@@ -215,11 +219,33 @@ class DetailActivity : AppCompatActivity() {
             )
         } else GlideUrl(url)
 
-    private fun startPlay(guid: String, title: String) {
+    /**
+     * 启动播放页。
+     * @param queue 联播队列：当点击的是某剧集列表中的一项时，传入完整 episode 列表，
+     *              PlayerActivity 会在播放完成后自动切下一集。电影/单集/TV 入口传 null。
+     * @param indexInQueue 当前 guid 在 queue 中的位置。
+     */
+    private fun startPlay(
+        guid: String,
+        title: String,
+        queue: List<Episode>? = null,
+        indexInQueue: Int = -1
+    ) {
         val intent = Intent(this, PlayerActivity::class.java).apply {
             putExtra(PlayerActivity.EXTRA_TITLE, title)
             putExtra(PlayerActivity.EXTRA_TOKEN, AccountStore.getToken())
             putExtra(PlayerActivity.EXTRA_ITEM_GUID, guid)
+            if (queue != null && indexInQueue >= 0 && indexInQueue < queue.size) {
+                putStringArrayListExtra(
+                    PlayerActivity.EXTRA_EPISODE_GUIDS,
+                    ArrayList(queue.map { it.guid })
+                )
+                putStringArrayListExtra(
+                    PlayerActivity.EXTRA_EPISODE_TITLES,
+                    ArrayList(queue.map { it.displayTitle })
+                )
+                putExtra(PlayerActivity.EXTRA_EPISODE_INDEX, indexInQueue)
+            }
         }
         startActivity(intent)
     }
