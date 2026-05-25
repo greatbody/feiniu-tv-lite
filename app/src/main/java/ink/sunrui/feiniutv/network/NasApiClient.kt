@@ -714,6 +714,62 @@ object NasApiClient {
         return "$base/api/v1/media/range/$mediaGuid"
     }
 
+    /**
+     * 播放心跳（[POST /v/api/v1/play/record]）。
+     *
+     * 飞牛官方播放器**每 15 秒**调一次（参考反编译 `PlayerViewModel.E = 15000`）。
+     * 此接口双重作用：
+     *   1. 记录"看到哪儿" / 已看状态（用于服务端进度持久化）
+     *   2. **保活服务端 ffmpeg 转码会话** —— 没有心跳，~3 分钟后转码会话会被 GC，
+     *      正在传输的 `.ts` 段后续会 410 Gone，IjkPlayer 不得不重连，表现为播放卡顿一下再继续。
+     *
+     * 所有字段除 [itemGuid] / [ts] / [playLink] 外皆可空（服务端容忍）。
+     * 字幕特殊：关闭字幕时官方传 `"00000000-0000-0000-0000-000000000000"` 常量。
+     */
+    fun recordPlay(
+        token: String,
+        itemGuid: String,
+        ts: Int,
+        playLink: String,
+        mediaGuid: String? = null,
+        videoGuid: String? = null,
+        audioGuid: String? = null,
+        subtitleGuid: String? = null,   // 空串/null 会替换成关闭字幕常量
+        resolution: String? = null,
+        bitrate: Long? = null,
+        watched: Int? = null
+    ): Result<Unit> {
+        return try {
+            val body = JsonObject().apply {
+                addProperty("user_guid", "")
+                addProperty("item_guid", itemGuid)
+                addProperty("ts", ts)
+                addProperty("play_link", playLink)
+                if (!mediaGuid.isNullOrBlank()) addProperty("media_guid", mediaGuid)
+                if (!videoGuid.isNullOrBlank()) addProperty("video_guid", videoGuid)
+                if (!audioGuid.isNullOrBlank()) addProperty("audio_guid", audioGuid)
+                // 关闭字幕 → 官方常量；选了字幕 → 传 guid；其余 → 不传
+                addProperty(
+                    "subtitle_guid",
+                    if (subtitleGuid.isNullOrEmpty()) CLOSE_SUBTITLE_RECORD_GUID else subtitleGuid
+                )
+                if (!resolution.isNullOrBlank()) addProperty("resolution", resolution)
+                if (bitrate != null && bitrate > 0) addProperty("bitrate", bitrate)
+                if (watched != null) addProperty("watched", watched)
+            }.toString()
+            postJson("${normalize(AppConfig.BASE_URL)}/api/v1/play/record", body, token)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            // 心跳失败不致命，但记一笔便于排查
+            Log.w(TAG, "recordPlay failed itemGuid=$itemGuid ts=$ts: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    /** 关闭字幕在 record 接口里的特殊 guid（来自官方 `VideoDataController.CLOSE_SUBTITLE_RECORD_GUID`） */
+    private const val CLOSE_SUBTITLE_RECORD_GUID = "00000000-0000-0000-0000-000000000000"
+
+
     private fun getJson(url: String, token: String): String {
         Log.d(TAG, "GET $url tokenLen=${token.length}")
         try {

@@ -29,6 +29,9 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
         const val EXTRA_EPISODE_GUIDS = "extra_episode_guids"
         const val EXTRA_EPISODE_TITLES = "extra_episode_titles"
         const val EXTRA_EPISODE_INDEX = "extra_episode_index"
+
+        /** 心跳间隔（毫秒）。与官方反编译值一致：PlayerViewModel.E = 15000。 */
+        private const val HEARTBEAT_INTERVAL_MS = 15_000L
     }
 
     private lateinit var binding: ActivityPlayerBinding
@@ -68,6 +71,18 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
         override fun run() {
             updateProgressOverlay()
             progressHandler.postDelayed(this, 500)
+        }
+    }
+
+    // 播放心跳：每 15 秒发 POST /v/api/v1/play/record。
+    // 双重作用：1) 服务端进度持久化；2) **保活 ffmpeg 转码会话** —— 没有心跳
+    // 服务端 ~3 分钟会 GC 掉转码会话，导致 .ts 段 410 Gone、IjkPlayer 重连卡顿。
+    // 间隔与官方反编译值一致（PlayerViewModel.E = 15000）。
+    private val heartbeatHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private val heartbeatRunnable = object : Runnable {
+        override fun run() {
+            sendPlayHeartbeat()
+            heartbeatHandler.postDelayed(this, HEARTBEAT_INTERVAL_MS)
         }
     }
 
@@ -173,6 +188,8 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
                 // 起播后开启进度更新
                 progressHandler.removeCallbacks(progressRunnable)
                 progressHandler.post(progressRunnable)
+                // 启动心跳（保活转码会话，避免 ~3 分钟卡顿）
+                startHeartbeat()
             }
 
             setOnInfoListener { _, what, extra ->
@@ -310,11 +327,59 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private fun releasePlayer() {
         val p = mediaPlayer ?: return
         mediaPlayer = null
+        // 心跳依赖 mediaPlayer 存活，释放时同步停掉
+        heartbeatHandler.removeCallbacks(heartbeatRunnable)
         runCatching {
             p.setDisplay(null)
             p.stop()
         }
         runCatching { p.release() }
+    }
+
+    /**
+     * 启动 15s 心跳。重复调用幂等（先清后排）。
+     * 心跳本身在 [heartbeatRunnable]，每次发完自我续期。
+     */
+    private fun startHeartbeat() {
+        heartbeatHandler.removeCallbacks(heartbeatRunnable)
+        // 立即发一次（保证刚起播立刻保活），之后每 15s 一次
+        heartbeatHandler.post(heartbeatRunnable)
+    }
+
+    /**
+     * 发送一次播放心跳。在 IO 线程跑，失败仅记日志（不影响播放）。
+     * 字段策略：拿到什么传什么；item_guid + ts + play_link 是必需的。
+     */
+    private fun sendPlayHeartbeat() {
+        val player = mediaPlayer ?: return
+        val playLink = pendingPlayUrl ?: return
+        if (token.isBlank() || itemGuid.isBlank()) return
+        val posSec = (runCatching { player.currentPosition }.getOrNull() ?: 0L) / 1000L
+        val tsSec = posSec.toInt().coerceAtLeast(0)
+
+        // 捕获到本地避免并发修改
+        val mGuid = mediaGuid.ifBlank { null }
+        val vGuid = currentVideoGuid
+        val aGuid = currentAudioGuid
+        val sGuid = currentSubtitleGuid
+        val res = currentResolution.ifBlank { null }
+        val br = if (currentBitrate > 0) currentBitrate else null
+        val tk = token
+
+        thread {
+            NasApiClient.recordPlay(
+                token = tk,
+                itemGuid = itemGuid,
+                ts = tsSec,
+                playLink = playLink,
+                mediaGuid = mGuid,
+                videoGuid = vGuid,
+                audioGuid = aGuid,
+                subtitleGuid = sGuid,
+                resolution = res,
+                bitrate = br
+            )
+        }
     }
 
     /**
@@ -342,6 +407,7 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
         // 重置全部播放会话状态（参考 onDestroy / onResume 的释放路径）
         progressHandler.removeCallbacks(progressRunnable)
+        heartbeatHandler.removeCallbacks(heartbeatRunnable)
         seekHandler.removeCallbacks(seekRunnable)
         releasePlayer()
         pendingPlayUrl = null
@@ -383,6 +449,16 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
     override fun onPause() {
         super.onPause()
         runCatching { mediaPlayer?.pause() }
+        // 暂停播放时停止心跳；onResume 时由 setOnPreparedListener 路径或这里恢复
+        heartbeatHandler.removeCallbacks(heartbeatRunnable)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 若播放器仍存在并处于可播放状态，恢复心跳
+        if (mediaPlayer != null && itemGuid.isNotBlank() && !pendingPlayUrl.isNullOrBlank()) {
+            startHeartbeat()
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -726,6 +802,7 @@ class PlayerActivity : AppCompatActivity(), SurfaceHolder.Callback {
     override fun onDestroy() {
         super.onDestroy()
         progressHandler.removeCallbacks(progressRunnable)
+        heartbeatHandler.removeCallbacks(heartbeatRunnable)
         overlayHandler.removeCallbacks(hideOverlayRunnable)
         seekHandler.removeCallbacks(seekRunnable)
         releasePlayer()
